@@ -1,10 +1,7 @@
 name: Deploy to AWS EC2
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch
 
 jobs:
   build:
@@ -25,7 +22,7 @@ jobs:
       run: mv ./target/*.jar ./target/app.jar
 
     - name: Check jar file
-      run: ls ./target  # This step checks the target folder to confirm the file exists.
+      run: ls ./target
 
     - name: Upload jar as artifact
       uses: actions/upload-artifact@v4
@@ -43,7 +40,7 @@ jobs:
         name: app.jar
 
     - name: Check downloaded artifact
-      run: ls -l  # This step confirms if the artifact is correctly downloaded to the runner.
+      run: ls -l
 
     - name: From GitHub Actions to EC2 through SCP
       uses: appleboy/scp-action@v0.1.7
@@ -62,12 +59,10 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script_stop: true
         script: |
-          # Install JDK 17 if not already installed
           if ! java -version 2>&1 | grep -q "17"; then
             sudo apt update
             sudo apt install -y openjdk-17-jdk
           fi
-          # Run the JAR file directly from the app folder
           cd /home/ubuntu/app
           sudo fuser -k -n tcp 8080 || true
           nohup java -jar app.jar > ./output.log 2>&1 &
