@@ -1,5 +1,5 @@
 name: Artifact workflow-02
-on: push
+on: workflow_dispatch
 jobs:
   up:
     runs-on: ubuntu-latest
