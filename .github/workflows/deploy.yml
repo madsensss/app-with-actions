@@ -67,11 +67,7 @@ jobs:
             sudo apt update
             sudo apt install -y openjdk-17-jdk
           fi
-          # Prepare the app directory
-          rm -rf /home/ubuntu/app/deploy
-          mkdir -p /home/ubuntu/app/deploy
-          mv /home/ubuntu/app/app.jar /home/ubuntu/app/deploy/app.jar
-          cd /home/ubuntu/app/deploy
+          # Run the JAR file directly from the app folder
+          cd /home/ubuntu/app
           sudo fuser -k -n tcp 8080 || true
           nohup java -jar app.jar > ./output.log 2>&1 &
-          rm -rf /home/ubuntu/app
