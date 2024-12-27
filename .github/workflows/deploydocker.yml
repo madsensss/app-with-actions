@@ -1,0 +1,39 @@
+name: Deploy to AWS EC2 with Docker
+
+on:
+  workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        script: |
+          if ! java -version 2>&1 | grep -q "17"; then
+            sudo apt update
+            sudo apt install -y openjdk-17-jdk
+            ls /usr/lib/jvm/java-17-openjdk-amd64
+            sudo sh -c 'echo JAVA_HOME=\"/usr/lib/jvm/java-17-openjdk-amd64\" >> /etc/environment'
+            source /etc/environment
+            echo $JAVA_HOME
+          fi
+
+          if ! docker -v > /dev/null 2>&1; then
+            sudo apt update
+            sudo apt install -y docker.io
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker $USER
+            newgrp docker
+          fi
+
+          docker pull ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
+          docker stop app-container || true
+          docker rm app-container || true
+          docker run -d --name app-container -p 8080:8080 ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
