@@ -62,6 +62,11 @@ jobs:
           if ! java -version 2>&1 | grep -q "17"; then
             sudo apt update
             sudo apt install -y openjdk-17-jdk
+            ls /usr/lib/jvm/java-17-openjdk-amd64
+            sudo vi /etc/environment
+            JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+            source /etc/environment
+            echo $JAVA_HOME
           fi
           cd /home/ubuntu/app
           sudo fuser -k -n tcp 8080 || true
