@@ -33,7 +33,7 @@ jobs:
             newgrp docker
           fi
 
-          docker pull ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
-          docker stop app-container || true
-          docker rm app-container || true
-          docker run -d --name app-container -p 8080:8080 ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
+          sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
+          sudo docker stop app-container || true
+          sudo docker rm app-container || true
+          sudo docker run -d --name app-container -p 8080:8080 ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
