@@ -29,11 +29,17 @@ jobs:
             sudo apt install -y docker.io
             sudo systemctl start docker
             sudo systemctl enable docker
+            who
+            id
+            echo $USER
+            tail /etc/group
             sudo usermod -aG docker $USER
+            tail /etc/group
             newgrp docker
+            tail /etc/group
           fi
-          sudo fuser -k -n tcp 8080 || true
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
           sudo docker stop app-container || true
           sudo docker rm app-container || true
           sudo docker run -d --name app-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
+          sudo docker ps -al
